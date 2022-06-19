@@ -4,9 +4,11 @@ import Newsletter from "../component/Newsletter";
 import { Remove, Add } from "@mui/icons-material";
 import { mobile } from "../responsive";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux/es/exports";
-import { addToCart } from "../redux/features/cartSlice";
+import { useDispatch, useSelector } from "react-redux/es/exports";
+import { addToCart, totalPrice } from "../redux/features/cartSlice";
 import { publicRequest } from "../requestMethod";
+
+import toast from "react-hot-toast";
 const Container = styled.div``;
 
 const Wrapper = styled.div`
@@ -17,6 +19,8 @@ const Wrapper = styled.div`
 
 const ImgContainer = styled.div`
   flex: 1;
+  height: 70%;
+  width: 70%;
 `;
 
 const Image = styled.img`
@@ -146,6 +150,9 @@ const Product = () => {
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
   const dispatch = useDispatch();
+  const { products: productForCart } = useSelector(state => ({
+    ...state.cart,
+  }));
 
   const handleClick = type => {
     if (type === "dec") {
@@ -170,7 +177,13 @@ const Product = () => {
 
   const handleAddToCart = () => {
     dispatch(addToCart({ ...product, qnt, color, size }));
+    // console.log("add to cart");
   };
+
+  useEffect(() => {
+    dispatch(totalPrice());
+    // console.log(productForCart);
+  }, [productForCart]);
 
   return (
     <Container>

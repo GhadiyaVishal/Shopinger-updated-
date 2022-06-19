@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { login } from "../../redux/apiCall";
 import { mobile } from "../../responsive";
-
+import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 const Container = styled.div`
   width: 100vw;
   height: 100vh;
@@ -37,6 +38,7 @@ const Form = styled.form`
 `;
 
 const Input = styled.input`
+  border: 1px solid #3e3e7c;
   flex: 1;
   min-width: 40%;
   margin: 10px 0;
@@ -59,12 +61,12 @@ const Button = styled.button`
 const Error = styled.span`
   color: red;
 `;
-const Link = styled.a`
-  margin: 5px 0px;
-  font-size: 12px;
-  text-decoration: underline;
-  cursor: pointer;
-`;
+// const Link = styled.a`
+//   margin: 5px 0px;
+//   font-size: 12px;
+//   text-decoration: underline;
+//   cursor: pointer;
+// `;
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -75,6 +77,7 @@ const Login = () => {
   const handlelogin = e => {
     e.preventDefault();
     login(dispatch, { username, password });
+    // toast.success("login success");
   };
   return (
     <Container>
@@ -94,7 +97,13 @@ const Login = () => {
           </Button>
           {error && <Error>Oops! Something went wrong</Error>}
           {/* <Link>DO NOT YOU REMEMBER THE PASSWORD?</Link> */}
-          <Link>CREATE A NEW ACCOUNT</Link>
+          {/* <Link>CREATE A NEW ACCOUNT</Link> */}
+          <span>
+            Not have an account?
+            <Link to={"/register"} className="ml-3">
+              <b>Register</b>
+            </Link>
+          </span>
         </Form>
       </Wrapper>
     </Container>

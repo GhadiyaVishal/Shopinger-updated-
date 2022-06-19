@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux/es/exports";
+import {
+  addToCart,
+  addToWishList,
+  totalPrice,
+} from "../redux/features/cartSlice";
+import toast from "react-hot-toast";
 
 const Info = styled.div`
   opacity: 0;
@@ -66,6 +73,10 @@ const Icon = styled.div`
 `;
 
 const Product = ({ item }) => {
+  // const [wish, setWish] = useState(0);/
+  // const { products: productForCart } = useSelector(state => ({
+  //   ...state.cart,
+  // }));
   // const navigate = useNavigate();
   // const handlesubmit = () => {
   //   // <Navigate to={"/product"} state={{ item }} />;
@@ -73,13 +84,32 @@ const Product = ({ item }) => {
   //   // console.log("triggered");
   // };
   // console.log(item);
+  const dispatch = useDispatch();
+  const handleAddToCart = () => {
+    dispatch(addToCart({ item: item }));
+  };
+
+  // const handleAddToCart = () => {
+  //   dispatch(addToCart({ products, qnt, price, total }));
+  //   // console.log("add to cart");
+  // };
+
+  // useEffect(() => {
+  //   dispatch(totalPrice());
+  //   // console.log(productForCart);
+  // }, [productForCart]);
+  const handelWishList = () => {
+    // console.log("wishlist");
+    // dispatch(addToWishList(wishList));
+  };
+
   return (
     <Container>
       <Circle />
       <Image src={item.img} />
       <Info>
         <Icon>
-          <ShoppingBagOutlinedIcon />
+          <ShoppingBagOutlinedIcon onClick={handleAddToCart} />
         </Icon>
         <Icon>
           <Link to={`/product/${item._id}`}>
@@ -87,7 +117,7 @@ const Product = ({ item }) => {
           </Link>
         </Icon>
         <Icon>
-          <FavoriteBorderOutlinedIcon />
+          <FavoriteBorderOutlinedIcon onClick={handelWishList} />
         </Icon>
       </Info>
     </Container>

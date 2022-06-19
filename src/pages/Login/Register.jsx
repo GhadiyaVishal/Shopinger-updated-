@@ -1,5 +1,9 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../../responsive";
+import { Link } from "react-router-dom";
+import { register } from "../../redux/apiCall";
+import { useDispatch, useSelector } from "react-redux";
 
 const Container = styled.div`
   width: 100vw;
@@ -17,7 +21,7 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  width: 40%;
+  width: 25%;
   padding: 20px;
   background-color: white;
   ${mobile({ width: "75%" })}
@@ -30,10 +34,12 @@ const Title = styled.h1`
 
 const Form = styled.form`
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
 `;
 
 const Input = styled.input`
+  border: 1px solid #3e3e7c;
   flex: 1;
   min-width: 40%;
   margin: 20px 10px 0px 0px;
@@ -55,25 +61,83 @@ const Button = styled.button`
   background-color: #3e3e7c;
   color: white;
   cursor: pointer;
+  margin-right: 5rem;
+`;
+const Redirect = styled.div`
+  display: -webkit-inline-box;
+  ${"" /* display: flex; */}
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+const Linkl = styled.div`
+  justify-content: right;
+`;
+const Error = styled.span`
+  color: red;
 `;
 
 const Register = () => {
+  // const handleSubmit = e => {
+  //   e.preventDefault();
+  //   register(dispatch, { username, email, password });
+  //   toast.success("register successfully");
+  // };
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { currentUser, isFetching, error } = useSelector(state => state.user);
+  const dispatch = useDispatch();
+
+  const handleRegister = e => {
+    e.preventDefault();
+    register(dispatch, { username, email, password });
+    // toast.success("login success");
+    // console.log("reh=giasgisvjkBjk");
+  };
   return (
     <Container>
       <Wrapper>
         <Title>CREATE AN ACCOUNT</Title>
         <Form>
-          <Input placeholder="name" />
-          <Input placeholder="last name" />
-          <Input placeholder="username" />
-          <Input placeholder="email" />
-          <Input placeholder="password" />
-          <Input placeholder="confirm password" />
+          {/* <Input
+            placeholder="name"
+            // onChange={e => setUsername(e.target.value)}
+          />
+          <Input
+            placeholder="last name"
+            // onChange={e => setUsername(e.target.value)}
+          /> */}
+          <Input
+            placeholder="username"
+            onChange={e => setUsername(e.target.value)}
+          />
+          <Input placeholder="email" onChange={e => setEmail(e.target.value)} />
+          <Input
+            type="password"
+            placeholder="password"
+            onChange={e => setPassword(e.target.value)}
+          />
+          {/* <Input
+            placeholder="confirm password"
+            onChange={e => setUsername(e.target.value)}
+          /> */}
           <Agreement>
-            By creating an account, I consent to the processing of my personal
-            data in accordance with the <b>PRIVACY POLICY</b>
+            {/* By creating an account */}
+            {/* , I consent to the processing of my personal
+            data in accordance with the <b>PRIVACY POLICY</b> */}
           </Agreement>
-          <Button>CREATE</Button>
+          <Redirect>
+            <Button onClick={handleRegister} disabled={isFetching}>
+              CREATE
+            </Button>
+          </Redirect>
+          {error && <Error>Oops! not yet</Error>}
+          <Linkl>
+            <Link to={"/login"}>
+              Already have an account? <b>Login</b>
+            </Link>
+          </Linkl>
         </Form>
       </Wrapper>
     </Container>

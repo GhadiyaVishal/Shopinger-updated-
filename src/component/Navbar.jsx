@@ -108,12 +108,17 @@ const MenuItems = styled.div`
     ${"" /* align-items: start; */
   }
 `;
+const Name = styled.h1`
+  font-size: 2rem;
+  color: white;
+`;
 
 const Navbar = () => {
   const [showMediaIcons, setShowMediaIcons] = useState(false);
 
-  const quantity = useSelector(state => state.cart.quantity);
-  // console.log(quantity);
+  const { products, qnt } = useSelector(state => ({ ...state.cart }));
+  // console.log(qnt);
+  // console.log(products);
   const navigate = useNavigate();
   return (
     <Container>
@@ -132,7 +137,8 @@ const Navbar = () => {
         <Center show={showMediaIcons}>
           {/* <Tag>SHOPINGER</Tag> */}
           <NavMenu onClick={() => setShowMediaIcons(true)}>
-            <Link className="mr-6" to="/">
+            <Name>S H O P I N G E R</Name>
+            {/* <Link className="mr-6" to="/">
               Home
             </Link>
             <Link className="mr-6" to="/productlist">
@@ -143,7 +149,7 @@ const Navbar = () => {
             </Link>
             <Link className="mr-6" to="/contact">
               Contact
-            </Link>
+            </Link> */}
           </NavMenu>
         </Center>
         <Right>
@@ -154,7 +160,7 @@ const Navbar = () => {
             <Link className="mr-4" to="/register">
               Register
             </Link>
-            <Badge badgeContent={quantity} color="primary">
+            <Badge badgeContent={products.length} color="primary">
               <ShoppingCartOutlinedIcon
                 onClick={() => navigate("/cart")}
                 className="cursor-pointer"

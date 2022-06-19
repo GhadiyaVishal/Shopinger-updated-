@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Add, Remove } from "@mui/icons-material";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { mobile } from "../responsive";
 import StripeCheckout from "react-stripe-checkout";
+import { userRequest } from "../requestMethod";
+import { Navigate, useNavigate } from "react-router-dom";
+import {
+  addToCart,
+  decreaseCart,
+  totalPrice,
+} from "../redux/features/cartSlice";
+import toast from "react-hot-toast";
 
 const KEY = process.env.REACT_APP_STRIPE;
 
@@ -156,7 +164,52 @@ const Button = styled.button`
 `;
 
 const Cart = () => {
-  const cart = useSelector(state => state.cart);
+  const { products, qnt, total } = useSelector(state => ({ ...state.cart }));
+  const dispatch = useDispatch();
+  // const [qnt, setQnt] = useState(1);
+  const [stripeToken, setStripeToken] = useState(null);
+  const navigate = useNavigate();
+  // console.log(products, qnt, total);
+  const onToken = token => {
+    setStripeToken(token);
+  };
+
+  useEffect(() => {
+    dispatch(totalPrice());
+    // console.log(products);
+  }, [products]);
+  // useEffect(() => {
+  //   const makeRequest = async () => {
+  //     try {
+  //       const res = await userRequest.post(
+  //         "localhost:5000/api/cart/checkout/payment",
+  //         {
+  //           tokenId: stripeToken.id,
+  //           amount: 500,
+  //         }
+  //       );
+  //       console.log(res);
+  //       navigate("/success", {
+  //         stripeData: res.data,
+  //         products: products,
+  //       });
+  //     } catch {}
+  //   };
+  //   stripeToken && makeRequest();
+  // }, [stripeToken, total, navigate]);
+
+  // console.log(cart.total);
+  // const handleClick = type => {
+  //   if (type === "dec") {
+  //     qnt > 1 && setQnt(qnt - 1);
+  //   } else {
+  //     setQnt(qnt + 1);
+  //   }
+  // };
+  // const handleCheck = () => {
+  //   toast.success("payment success");
+  // };
+
   return (
     <Container>
       <Wrapper>
@@ -164,14 +217,14 @@ const Cart = () => {
         <Top>
           <TopButton>CONTINUE SHOPPING</TopButton>
           <TopTexts>
-            <TopText>Shopping Bag({cart.quantity})</TopText>
+            <TopText>Shopping Bag({qnt})</TopText>
             <TopText>Your Wishlist (0)</TopText>
           </TopTexts>
-          <TopButton type="filled">CHECKOUT NOW</TopButton>
         </Top>
+        <TopButton type="filled">CHECKOUT NOW</TopButton>
         <Bottom>
           <Info>
-            {cart.products.map(product => (
+            {products?.map(product => (
               <Product>
                 <ProductDetail>
                   <Image src={product.img} />
@@ -190,16 +243,67 @@ const Cart = () => {
                 </ProductDetail>
                 <PriceDetail>
                   <ProductAmountContainer>
-                    <Add className="cursor-pointer" />
+                    <Remove
+                      className="cursor-pointer"
+                      onClick={() => dispatch(decreaseCart(product))}
+                    />
                     <ProductAmount>{product.qnt}</ProductAmount>
-                    <Remove className="cursor-pointer" />
+                    <Add
+                      className="cursor-pointer"
+                      onClick={() => dispatch(addToCart(product))}
+                    />
+                    {/* <Add className="cursor-pointer" />
+                    <ProductAmount>{product.qnt}</ProductAmount>
+                    <Remove className="cursor-pointer" /> */}
                   </ProductAmountContainer>
                   <ProductPrice>₹ {product.price * product.qnt}</ProductPrice>
                 </PriceDetail>
               </Product>
             ))}
             <Hr />
-            {/* <Product>
+          </Info>
+          <Summary>
+            <SummaryTitle>ORDER SUMMARY</SummaryTitle>
+            <SummaryItem>
+              <SummaryItemText>Subtotal</SummaryItemText>
+              <SummaryItemPrice>₹ {total}</SummaryItemPrice>
+            </SummaryItem>
+            <SummaryItem>
+              <SummaryItemText>Estimated Shipping</SummaryItemText>
+              <SummaryItemPrice>₹ 5.90</SummaryItemPrice>
+            </SummaryItem>
+            <SummaryItem>
+              <SummaryItemText>Shipping Discount</SummaryItemText>
+              <SummaryItemPrice>₹ -5.90</SummaryItemPrice>
+            </SummaryItem>
+            <SummaryItem type="total">
+              <SummaryItemText>Total</SummaryItemText>
+              <SummaryItemPrice>₹ {total}</SummaryItemPrice>
+            </SummaryItem>
+            <StripeCheckout
+              name="Shopiger"
+              image="logo.png"
+              billingAddress
+              shippingAddress
+              description={`Your total is ${total}`}
+              amount={total * 100}
+              token={onToken}
+              stripeKey={KEY}
+            >
+              <Button>CHECKOUT NOW</Button>
+            </StripeCheckout>
+          </Summary>
+        </Bottom>
+        {/* } */}
+      </Wrapper>
+    </Container>
+  );
+};
+
+export default Cart;
+
+//  {
+/* <Product>
               <ProductDetail>
                 <Image src="https://i.pinimg.com/originals/2d/af/f8/2daff8e0823e51dd752704a47d5b795c.png" />
                 <Details>
@@ -223,32 +327,5 @@ const Cart = () => {
                 </ProductAmountContainer>
                 <ProductPrice>₹ 20</ProductPrice>
               </PriceDetail>
-            </Product> */}
-          </Info>
-          <Summary>
-            <SummaryTitle>ORDER SUMMARY</SummaryTitle>
-            <SummaryItem>
-              <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>₹ {cart.total}</SummaryItemPrice>
-            </SummaryItem>
-            <SummaryItem>
-              <SummaryItemText>Estimated Shipping</SummaryItemText>
-              <SummaryItemPrice>₹ 5.90</SummaryItemPrice>
-            </SummaryItem>
-            <SummaryItem>
-              <SummaryItemText>Shipping Discount</SummaryItemText>
-              <SummaryItemPrice>₹ -5.90</SummaryItemPrice>
-            </SummaryItem>
-            <SummaryItem type="total">
-              <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>₹ {cart.total}</SummaryItemPrice>
-            </SummaryItem>
-            <Button>CHECKOUT NOW</Button>
-          </Summary>
-        </Bottom>
-      </Wrapper>
-    </Container>
-  );
-};
-
-export default Cart;
+            </Product> */
+//  }
